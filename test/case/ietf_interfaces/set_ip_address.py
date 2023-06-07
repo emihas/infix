@@ -2,8 +2,9 @@
 
 import infamy
 
+#Set of parameters to set IPv4 address to a certain interface:
 new_ip_address = "10.0.1.166"
-new_prefix_lenght = 24
+new_prefix_length = 24
 interface_name = "e0"
 
 def print_ip_addresses(target):
@@ -34,7 +35,7 @@ def print_ip_addresses(target):
         else:
             print(f"Interface: {name}, No IPv6 Address")
             
-def check_ip_address_in_interface(ip_address, interface_name, prefix_length):
+def assert_ip_address_in_interface(target, ip_address, interface_name, prefix_length):
     running = target.get_config_dict("ietf-interfaces:interfaces")
     interfaces = running.get("interfaces", {}).get("interface", [])
 
@@ -59,7 +60,7 @@ def check_ip_address_in_interface(ip_address, interface_name, prefix_length):
     assert found, f"IP address {ip_address}/{prefix_length} not found for interface {interface_name}"
 
             
-def assert_ip_address_exists(ip_address):
+def assert_ip_address_exists(target, ip_address):
     running = target.get_config_dict("ietf-interfaces:interfaces")
     interfaces = running.get("interfaces", {}).get("interface", [])
 
@@ -88,12 +89,12 @@ with infamy.Test() as test:
         config = {
             "interfaces": {
                 "interface": [{
-                    "name": "e0",
+                    "name": {interface_name},
                     "type": "iana-if-type:ethernetCsmacd",
                     "ipv4": {
                         "address": [{
-                            "ip": "10.0.1.176",
-                            "prefix-length": 24
+                            "ip": {new_ip_address},
+                            "prefix-length": new_prefix_length
                         }]
                     }
                 }]
@@ -104,7 +105,7 @@ with infamy.Test() as test:
 
     with test.step("Get updated IP addresses"):
         print_ip_addresses(target)
-        check_ip_address_in_interface(new_ip_address, interface_name, new_prefix_lenght)
+        assert_ip_address_in_interface(target, new_ip_address, interface_name, new_prefix_length)
     
             
     test.succeed()
