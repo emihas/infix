@@ -65,7 +65,7 @@ with infamy.Test() as test:
                     </if:interface>
                   </if:interfaces>
                   '''
-        target.ncc.edit_config(config_xml)
+        target.ncc.edit_config(config_xml, default_operation="replace")
 
     with test.step("Get updated IP addresses"):
         print_ip_addresses(target)
